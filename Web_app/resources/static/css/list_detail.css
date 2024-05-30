@@ -1,0 +1,9 @@
+@charset "UTF-8";
+
+        .sortable {
+            cursor: pointer;
+        }
+        .sort-icon {
+            font-size: 12px;
+            vertical-align: middle;
+        }

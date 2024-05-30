@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<head th:replace="~{view_parts/head :: head_fragment(title = '社員詳細')}">
+</head>
+<body>
+	<div th:replace="view_parts/header :: header_fragment"></div>
+	<h1 class="text-center my-5">社員詳細情報</h1>
+	<div class="container">
+		<div th:if="${employeeDetail} != null">
+			<table class="table table-primary table-striped mt-5">
+				<thead class="text-center">
+					<tr>
+						<th>社員ID</th>
+						<th>社員名</th>
+						<th>社員名(カナ)</th>
+						<th>年齢</th>
+						<th>住所</th>
+						<th>メールアドレス</th>
+						<th>連絡先</th>
+						<th>入社日</th>
+						<th>部署ID</th>
+						<th>部署名</th>
+					</tr>
+				</thead>
+				<tbody class="text-center">
+					<tr>
+						<td th:text="${employeeDetail.employeeId}"></td>
+						<td th:text="${employeeDetail.employeeName}"></td>
+						<td th:text="${employeeDetail.employeeNameKana}"></td>
+						<td><ins th:if="${employeeDetail.employeeAge != null}"
+								th:text="${employeeDetail.employeeAge}"></ins> <ins
+								th:if="${employeeDetail.employeeAge == null}">登録なし</ins></td>
+						<td><ins th:if="${employeeDetail.employeeAddress != null}"
+								th:text="${employeeDetail.employeeAddress}"></ins> <ins
+								th:if="${employeeDetail.employeeAddress == null}">登録なし</ins></td>
+						<td><ins th:if="${employeeDetail.employeeMail != null}"
+								th:text="${employeeDetail.employeeMail}"></ins> <ins
+								th:if="${employeeDetail.employeeMail == null}">登録なし</ins></td>
+						<td><ins th:if="${employeeDetail.employeePhone != null}"
+								th:text="${employeeDetail.employeePhone}"></ins> <ins
+								th:if="${employeeDetail.employeePhone == null}">登録なし</ins></td>
+						<td><ins th:if="${employeeDetail.employeeHiredate != null}"
+								th:text="${employeeDetail.employeeHiredate}"></ins> <ins
+								th:if="${employeeDetail.employeeHiredate == null}">登録なし</ins></td>
+						<td><ins
+								th:if="${employeeDetail.department.departmentId != '000'}"
+								th:text="${employeeDetail.department.departmentId}"></ins> <ins
+								th:if="${employeeDetail.department.departmentId == '000'}">登録なし</ins>
+						</td>
+						<td><ins
+								th:if="${employeeDetail.department.departmentId != '000'}"
+								th:text="${employeeDetail.department.departmentName}"></ins> <ins
+								th:if="${employeeDetail.department.departmentId == '000'}">登録なし</ins>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<p th:if="${errorMessage}" th:text="${errorMessage}">エラーメッセージ</p>
+		<div th:if="${employeeDetail} == null">
+			<p>部署情報はありません</p>
+		</div>
+	</div>
+	<div class="my-4  text-center">
+		<a th:href="@{/employee/select/list}" class="btn btn-secondary mx-2">社員一覧に戻る</a>
+		<a th:href="@{/menu}" class="btn btn-secondary mx-2">メニューに戻る</a>
+	</div>
+</body>
+</html>

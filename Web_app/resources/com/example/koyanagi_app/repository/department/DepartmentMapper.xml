@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.example.koyanagi_app.repository.department.DepartmentMapper">
+
+	<!-- 部署情報を全件取得する -->
+	<select id="findAllDepartment"
+		resultType="com.example.koyanagi_app.entity.Department">
+		SELECT department_id AS departmentId,
+		department_name AS departmentName
+		FROM department ORDER BY department_name ASC;
+	</select>
+	
+	<!-- 部署情報を全件取得する -->
+	<select id="findByNot000Department"
+		resultType="com.example.koyanagi_app.entity.Department">
+		SELECT department_id AS departmentId,
+		department_name AS departmentName
+		FROM department WHERE department_id != '000' ORDER BY department_name ASC;
+	</select>
+
+	<!-- 部署名で取得する(あいまい検索) -->
+	<select id="findByNameAmbiguousDepartment"
+		resultType="com.example.koyanagi_app.entity.Department">
+		SELECT department_id AS departmentId, department_name AS
+		departmentName FROM department WHERE department_name LIKE
+		'%${departmentName}%';
+	</select>
+
+	<!-- 部署IDで取得する -->
+	<select id="findByIdDepartment"
+		resultType="com.example.koyanagi_app.entity.Department">
+		SELECT department_id AS departmentId, department_name AS
+		departmentName FROM department 
+		WHERE department_id = #{departmentId};
+	</select>
+	
+	<!-- 部署名で取得する -->
+	<select id="findByNameDepartment"
+		resultType="com.example.koyanagi_app.entity.Department">
+		SELECT department_id AS departmentId, department_name AS
+		departmentName FROM department 
+		WHERE department_name = #{departmentName};
+	</select>
+
+	<!-- 部署情報+社員情報を取得する -->
+	<select id="findAllDepartmentAndEmployee"
+		resultMap="departmentAndEmployee">
+		SELECT d.department_id , department_name, employee_id, 
+		employee_name, employee_name_kana, employee_Age, employee_address, employee_mail,
+		employee_phone, employee_hiredate FROM employee e
+		INNER JOIN department d ON
+		e.department_id = d.department_id WHERE
+		d.department_id = #{departmentId};
+	</select>
+	<resultMap id="departmentAndEmployee"
+		type="com.example.koyanagi_app.entity.Department">
+		<id property="departmentId" column="department_id" />
+		<result property="departmentName" column="department_name" />
+		<collection property="employeeList"
+			ofType="com.example.koyanagi_app.entity.Employee">
+			<id property="employeeId" column="employee_id" />
+			<result property="employeeName" column="employee_name" />
+			<result property="employeeNameKana" column="employee_name_kana" />
+			<result property="employeeAge" column="employee_Age" />
+			<result property="employeeAddress" column="employee_address" />
+			<result property="employeeMail" column="employee_mail" />
+			<result property="employeePhone" column="employee_phone" />
+			<result property="employeeHiredate" column="employee_hiredate" />
+		</collection>
+	</resultMap>
+
+
+	<!-- 部署情報を登録 -->
+	<insert id="createDepartment">
+		INSERT INTO department(department_id , department_name ) VALUES (#{departmentId} ,#{departmentName});
+	</insert>
+
+	<!--部署情報を更新-->
+	<update id="updateDepartment"> 
+		UPDATE department SET department_id = #{departmentId} ,department_name = #{departmentName} 
+			WHERE department_id = #{departmentId};
+	</update>
+	
+	<!-- 部署情報を削除 -->
+	<delete id="deleteDepartmentById">
+		DELETE FROM department WHERE department_id = #{departmentId};
+	</delete>
+
+
+
+</mapper>

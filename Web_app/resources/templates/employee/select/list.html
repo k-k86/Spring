@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head th:replace="~{view_parts/head :: head_fragment(title = '社員一覧')}">
+</head>
+<body>
+	<div th:replace="view_parts/header :: header_fragment"></div>
+	<h1 class="text-center mt-3">社員情報一覧</h1>
+
+	<div class="container text-end my-3">
+		<form th:action="@{/employee/select/search_emp}" method="post" class="d-inline">
+			<select name="deptId" class="form-select d-inline me-1" style="width: 15%">
+				<option value="0"></option>
+				<option th:each="dept : ${deptAllList}" th:value="${dept.departmentId}" th:text="${dept.departmentName}"></option>
+			</select>
+			<input type="text" name="empName" class="form-control w-25 d-inline me-3" placeholder="社員名検索">
+			<input type="submit" class="btn btn-primary" value="社員検索" style="margin-right: 5%">
+		</form>
+		<form th:action="@{/employee/insert/create_form}" class="d-inline" method="get">
+			<input type="submit" class="btn btn-primary mx-2" value="社員登録">
+		</form>
+		<form th:action="@{/employee/delete/check_page}" th:object="${employeeForm}" class="d-inline" method="post">
+			<input type="submit" class="btn btn-danger mx-2" value="削除">
+			<p th:if="${message}" th:text="${message}" class="my-2 fs-5">入力チェックメッセージ</p>
+			<p th:if="${serachMessage}" th:text="${serachMessage}" class="my-2 fs-5 text-center text-success">検索結果</p>
+			<div th:if="${pageList} != null">
+				<table class="table table-primary table-striped mt-3">
+					<thead class="text-center">
+						<tr>
+							<th></th>
+							<th class="sortable" onclick="sortTable(1)">社員ID<span class="sort-icon">&#9660;</span></th>
+							<th>社員名</th>
+							<th>社員名(カナ)</th>
+							<th class="sortable" onclick="sortTable(4)">部署ID<span class="sort-icon">&#9660;</span></th>
+							<th>部署名</th>
+							<th></th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody class="text-center">
+						<tr th:each="emp : ${pageList}">
+							<td><input type="checkbox" th:value="${emp.employeeId}" th:field="*{checkIdList}" class="form-check-input"></td>
+							<td th:text="${emp.employeeId}"></td>
+							<td th:text="${emp.employeeName}"></td>
+							<td th:text="${emp.employeeNameKana}"></td>
+							<td th:text="${emp.department.departmentId}"></td>
+							<td th:text="${emp.department.departmentName}"></td>
+							<td><a th:href="@{/employee/select/detail/{id}(id=${emp.employeeId})}">詳細</a></td>
+							<td><a th:href="@{/employee/update/update_page/{id}(id=${emp.employeeId})}">編集</a></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</form>
+		<p th:if="${errorMessage}" th:text="${errorMessage}">エラーメッセージ</p>
+		<div th:if="${pageList} == null">
+			<p class="text-center fs-2">社員情報はありません</p>
+		</div>
+	</div>
+	<!-- ページネーション始まり -->
+	 <div class="container mt-3 text-center">
+        <!-- ページが1ページ以上ある場合に表示 -->
+        <div th:if="${pageList.totalPages > 0}">
+            <nav>
+                <ul class="pagination justify-content-center">
+                    <!-- 「前へ」リンク。前のページが存在する場合に表示 -->
+                    <li th:if="${pageList.hasPrevious()}" class="page-item">
+                        <a class="page-link text-primary bg-light" th:href="@{/employee/select/list(page=${pageList.number - 1})}">前へ</a>
+                    </li>
+
+                    <!-- ページ番号リンク -->
+                    <!-- ページのシーケンスを作成して、各ページ番号を繰り返し処理 -->
+                    <th:block th:each="i: ${#numbers.sequence(0, pageList.totalPages - 1)}" th:switch="${pageList.number}">
+                        <!-- 現在のページの場合、アクティブな状態にする -->
+                        <li th:case="${i}" class="page-item active">
+                            <a class="page-link text-white bg-primary" th:text="${i + 1}"> </a>
+                        </li>
+                        <!-- 他のページの場合、通常のリンクとして表示 -->
+                        <li th:case="*" class="page-item">
+                            <a class="page-link text-primary bg-light" th:href="@{/employee/select/list(page=${i})}" th:text="${i + 1}"> </a>
+                        </li>
+                    </th:block>
+
+                    <!-- 「次へ」リンク。次のページが存在する場合に表示 -->
+                    <li th:if="${pageList.hasNext()}" class="page-item">
+                        <a class="page-link text-primary bg-light" th:href="@{/employee/select/list(page=${pageList.number + 1})}">次へ</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <!-- ページネーション終わり -->
+
+	<div class="container text-center mt-3">
+		<a th:href="@{/menu}" class="btn btn-secondary mx-2">メニューに戻る</a>
+		<form th:action="@{/logout}" method="post" class="d-inline">
+			<input type="submit" value="ログアウト" class="btn btn-secondary mx-2">
+		</form>
+	</div>
+	<script type="text/javascript" th:src="@{/js/tableSort.js}"></script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title th:if="${employeeForm.isFlag}">登録ページ</title>
+<title th:unless="${employeeForm.isFlag}">更新ページ</title>
+<!-- Bootstrap CSS -->
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet"
+	integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+	crossorigin="anonymous">
+</head>
+<body>
+	<div th:replace="view_parts/header :: header_fragment"></div>
+	<div class="container text-center mt-3">
+		<h1 th:if="${employeeForm.isFlag}">社員登録</h1>
+		<h1 th:unless="${employeeForm.isFlag}">社員更新</h1>
+
+		<div th:if="${employee} != null" class="mt-2">
+			<h3 class="text-primary">更新対象</h3>
+			<table class="table table-bordered">
+				<thead class="table-primary">
+					<tr>
+						<th>社員ID</th>
+						<th>社員名</th>
+						<th>社員名(カナ)</th>
+						<th>年齢</th>
+						<th>住所</th>
+						<th>メールアドレス</th>
+						<th>連絡先</th>
+						<th>入社日</th>
+						<th>部署ID</th>
+						<th>部署名</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td th:text="${employee.employeeId}"></td>
+						<td th:text="${employee.employeeName}"></td>
+						<td th:text="${employee.employeeNameKana}"></td>
+						<td
+							th:text="${employee.employeeAge != null ? employee.employeeAge : '登録なし'}"></td>
+						<td
+							th:text="${employee.employeeAddress != null ? employee.employeeAddress : '登録なし'}"></td>
+						<td
+							th:text="${employee.employeeMail != null ? employee.employeeMail : '登録なし'}"></td>
+						<td
+							th:text="${employee.employeePhone != null ? employee.employeePhone : '登録なし'}"></td>
+						<td
+							th:text="${employee.employeeHiredate != null ? employee.employeeHiredate : '登録なし'}"></td>
+						<td
+							th:text="${employee.departmentId != '000' ? employee.departmentId : '登録なし'}"></td>
+						<td
+							th:text="${employee.departmentId != '000' ? employee.department.departmentName : '登録なし'}"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<form class="row g-3 justify-content-center mt-3"
+			th:action="${employeeForm.isFlag} ? @{/employee/insert/create_check} : @{/employee/update/update_check}"
+			th:object="${employeeForm}" method="post">
+			<div>
+				<input type="hidden" th:unless="${employeeForm.isFlag}"
+					th:field="*{empId}">
+			</div>
+			<span class="text-end">*がついた項目は入力必須です</span>
+			<div class="col-md-6">
+				<div class="me-2 w-100">
+					<input type="text" class="form-control" placeholder="*社員名"
+						th:field="*{empName}"> <span
+						th:if="${#fields.hasErrors('empName')}" th:errors="*{empName}"
+						class="text-danger"></span>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<div class="me-2 w-100">
+					<input type="text" class="form-control" placeholder="*社員名(カナ)"
+						th:field="*{empNameKana}"> <span>※カタカナで入力してください</span> <span
+						th:if="${#fields.hasErrors('empNameKana')}"
+						th:errors="*{empNameKana}" class="text-danger"></span>
+				</div>
+			</div>
+
+			<div class="col-md-6">
+				<input type="number" class="form-control" placeholder="年齢"
+					th:field="*{empAge}"> <span>※入力できる範囲は15～100です</span> <span
+					th:if="${#fields.hasErrors('empAge')}" th:errors="*{empAge}"
+					class="text-danger"></span>
+			</div>
+			<div class="col-md-6">
+				<input type="text" class="form-control" placeholder="住所"
+					th:field="*{empAddress}">
+			</div>
+			<div class="col-md-6">
+				<input type="text" class="form-control" placeholder="メールアドレス"
+					th:field="*{empMail}"> <span
+					th:if="${#fields.hasErrors('empMail')}" th:errors="*{empMail}"
+					class="text-danger"></span>
+			</div>
+			<div class="col-md-6">
+				<input type="text" class="form-control" placeholder="携帯電話番号"
+					th:field="*{empPhone}"> <span>※000-1234-5678の形式で入力してください</span>
+				<span th:if="${#fields.hasErrors('empPhone')}"
+					th:errors="*{empPhone}" class="text-danger"></span>
+			</div>
+			<div class="col-md-6">
+				<input type="date" class="form-control bg-info-subtle" placeholder="入社日"
+					th:field="*{empHiredate}" min="1990-01-01"> <span
+					th:if="${#fields.hasErrors('empHiredate')}"
+					th:errors="*{empHiredate}" class="text-danger"></span>
+			</div>
+			<div class="col-md-6">
+				<select class="form-select" th:field="*{deptId}">
+					<option value="0">*部署名</option>
+					<option th:each="dept : ${deptAllList}"
+						th:value="${dept.departmentId}" th:text="${dept.departmentName}"></option>
+				</select> <span>※何も指定がない場合は無所属と入ります</span>
+			</div>
+			<div class="col-12">
+				<div class="d-flex justify-content-center">
+					<input type="submit" value="　登録　"  class="btn btn-primary mx-2"
+						th:if="${employeeForm.isFlag}">
+					<input type="submit" value="　更新　" class="btn btn-primary mx-2"
+						th:unless="${employeeForm.isFlag}">
+				</div>
+			</div>
+			<div class="col-12">
+				<div th:if="${errorMessage}" th:text="${errorMessage}"
+					class="text-danger"></div>
+			</div>
+		</form>
+
+		<div class="d-flex justify-content-center">
+			<a th:href="@{/employee/select/list}" class="btn btn-secondary mx-2">社員情報一覧</a>
+			<a th:href="@{/menu}" class="btn btn-secondary mx-2">メニューに戻る</a>
+		</div>
+	</div>
+
+	<!-- Bootstrap JS -->
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+u9s0gV1K2htpp+8jWv5pfD6cznQv"
+		crossorigin="anonymous"></script>
+</body>
+</html>

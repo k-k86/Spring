@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper
+	namespace="com.example.koyanagi_app.repository.employee.EmployeeMapper">
+
+	<resultMap type="com.example.koyanagi_app.entity.Employee"
+		id="empMap">
+		<id property="employeeId" column="employee_id" />
+		<result property="employeeName" column="employee_name" />
+		<result property="employeeNameKana" column="employee_name_kana" />
+		<result property="employeeAge" column="employee_age" />
+		<result property="employeeAddress" column="employee_address" />
+		<result property="employeeMail" column="employee_mail" />
+		<result property="employeePhone" column="employee_phone" />
+		<result property="employeeHiredate" column="employee_hiredate" />
+		<result property="departmentId" column="department_id" />
+		<association property="department"
+			javaType="com.example.koyanagi_app.entity.Department">
+			<id property="departmentId" column="department_id" />
+			<result property="departmentName" column="department_name" />
+		</association>
+	</resultMap>
+	
+	<select id="countAll" resultType="int">
+		SELECT COUNT(*) FROM employee;
+	</select>
+	
+	<!-- 社員情報を全件取得する -->
+	<select id="pageFindAllEmployee" resultMap="empMap">
+		SELECT
+		employee_id,
+		employee_name,
+		employee_name_kana,
+		employee_age,
+		employee_address,
+		employee_mail,
+		employee_phone,
+		employee_hiredate,
+		d.department_id,
+		department_name
+		FROM employee e
+		INNER JOIN department d
+		ON
+		e.department_id = d.department_id ORDER BY employee_id ASC
+		LIMIT #{pageable.pageSize} OFFSET #{pageable.offset};
+	</select>
+
+	<!-- 社員情報を全件取得する -->
+	<select id="findAllEmployee" resultMap="empMap">
+		SELECT
+		employee_id,
+		employee_name,
+		employee_name_kana,
+		employee_age,
+		employee_address,
+		employee_mail,
+		employee_phone,
+		employee_hiredate,
+		d.department_id,
+		department_name
+		FROM employee e
+		INNER JOIN department d
+		ON
+		e.department_id = d.department_id ORDER BY employee_id ASC;
+	</select>
+
+	<!-- 社員情報で社員IDを条件で取得する -->
+	<select id="findByIdEmployee" resultMap="empMap">
+		SELECT
+		employee_id,
+		employee_name,
+		employee_name_kana,
+		employee_age,
+		employee_address,
+		employee_mail,
+		employee_phone,
+		employee_hiredate,
+		d.department_id,
+		department_name
+		FROM employee e
+		INNER JOIN department d
+		ON
+		e.department_id = d.department_id
+		WHERE employee_id = #{employeeId};
+	</select>
+	
+	<select id="countByDeptIdAndEmpName" resultType="int">
+		SELECT
+		COUNT(*)
+		FROM employee e
+		INNER JOIN department d
+		ON e.department_id = d.department_id
+		<where>
+			<if test="departmentId != null">
+				d.department_Id = #{departmentId}
+			</if>
+			<if test="employeeName != null">
+				AND employee_name LIKE '%' || #{employeeName} || '%'
+			</if>
+		</where>
+	</select>
+	
+	<select id="pageFindByDeptIdAndEmpName" resultMap="empMap">
+		SELECT
+		employee_id,
+		employee_name,
+		employee_name_kana,
+		employee_age,
+		employee_address,
+		employee_mail,
+		employee_phone,
+		employee_hiredate,
+		d.department_id,
+		department_name
+		FROM employee e
+		INNER JOIN department d
+		ON e.department_id = d.department_id
+		<where>
+			<if test="departmentId != null">
+				d.department_Id = #{departmentId}
+			</if>
+			<if test="employeeName != null">
+				AND employee_name LIKE '%' || #{employeeName} || '%'
+			</if>
+		</where>
+		ORDER BY employee_Id ASC
+		LIMIT #{pageable.pageSize} OFFSET #{pageable.offset};
+	</select>
+
+
+	<!-- 社員情報で部署IDを条件で取得する -->
+	<select id="findBydepartmentIdEmployee"
+		resultType="com.example.koyanagi_app.entity.Employee">
+		SELECT employee_id AS employeeId, employee_name AS
+		employeeName,
+		employee_name_kana AS employeeNameKana,
+		employee_age AS
+		employeeAge, employee_address AS employeeAddress,
+		employee_mail AS
+		employeeMail, employee_phone AS employeePhone,
+		employee_hiredate AS
+		employeeHiredate, department_id AS departmentId
+		FROM employee WHERE
+		department_id = #{departmentId};
+	</select>
+
+	<!-- 社員情報登録 -->
+	<insert id="insertEmployee">
+		INSERT INTO public.employee(
+		employee_name,
+		employee_name_kana, employee_age, employee_address,
+		employee_mail,
+		employee_phone, employee_hiredate, department_id)
+		VALUES
+		(#{employeeName}, #{employeeNameKana}, #{employeeAge},
+		#{employeeAddress},
+		#{employeeMail}, #{employeePhone},
+		#{employeeHiredate}, #{departmentId});
+	</insert>
+
+	<!-- 社員情報の更新 -->
+	<update id="updateEmployee">
+		UPDATE employee
+		SET employee_id = #{employeeId},
+		employee_name= #{employeeName},
+		employee_name_kana=
+		#{employeeNameKana}, employee_age= #{employeeAge},
+		employee_address =
+		#{employeeAddress}, employee_mail= #{employeeMail},
+		employee_phone=
+		#{employeePhone},
+		employee_hiredate= #{employeeHiredate},
+		department_id= #{departmentId}
+		WHERE employee_id = #{employeeId};
+	</update>
+
+
+	<!-- 社員情報削除 -->
+	<delete id="deleteByIdEmployee">
+		DELETE FROM employee WHERE employee_id =
+		#{employeeId};
+	</delete>
+</mapper>
